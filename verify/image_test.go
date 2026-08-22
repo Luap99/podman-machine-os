@@ -237,6 +237,13 @@ var _ = Describe("run image tests", Ordered, ContinueOnFailure, func() {
 			Expect(archSession.outputToString()).To(Equal("podman-machine-os"))
 		})
 
+		It("verify sshd config", func() {
+			sshSession, err := mb.setCmd([]string{"machine", "ssh", machineName, "sudo", "sshd", "-T"}).run()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(sshSession).To(Exit(0))
+			Expect(sshSession.outputToString()).To(And(ContainSubstring("MaxStartups 65535:1:65535"), MatchRegexp("PerSourcePenalties .*authfail:0")))
+		})
+
 		It("check podman coreos image version", func() {
 			skipIfVmtype(WSLVirt, "wsl does not use ostree updates")
 			// set by podman-rpm-info-vars.sh
