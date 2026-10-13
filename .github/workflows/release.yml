@@ -27,7 +27,7 @@ jobs:
     needs: [build]
     timeout-minutes: 60
     container:
-      image: ghcr.io/podman-container-tools/podman-machine-os-ci@sha256:fd402aaf0eebec21d476a211c0e588d6d56b307bbfb40e28768b35f71574a0ee # 20260819t094239z
+      image: ghcr.io/podman-container-tools/podman-machine-os-ci:20261006t125107z@sha256:bb129c520d0148f363af50c07354d832d3268a60e2ee24f12dba40edbd0d0012
       options: --privileged
     permissions:
       contents: write
