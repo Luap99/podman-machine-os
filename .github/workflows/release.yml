@@ -27,7 +27,7 @@ jobs:
     needs: [build]
     timeout-minutes: 60
     container:
-      image: ghcr.io/podman-container-tools/podman-machine-os-ci@sha256:fd402aaf0eebec21d476a211c0e588d6d56b307bbfb40e28768b35f71574a0ee # 20260819t094239z
+      image: ghcr.io/podman-container-tools/podman-machine-os-ci:20261006t125107z@sha256:bb129c520d0148f363af50c07354d832d3268a60e2ee24f12dba40edbd0d0012
       options: --privileged
     permissions:
       contents: write
@@ -99,3 +99,18 @@ jobs:
               gh pr edit --remove-label do-not-merge/wait-machine-os-build  https://github.com/podman-container-tools/podman/pull/$pr
               gh auth logout
           fi
+
+      - name: Send failure email
+        if: failure()
+        # Ref: https://github.com/dawidd6/action-send-mail
+        uses: dawidd6/action-send-mail@67ce3558d613188179559c61d3565140cf389968 # v22
+        with:
+          server_address: ${{secrets.ACTION_MAIL_SERVER}}
+          server_port: 465
+          username: ${{secrets.ACTION_MAIL_USERNAME}}
+          password: ${{secrets.ACTION_MAIL_PASSWORD}}
+          subject: Github Actions build failure on ${{github.repository}}
+          to: "podman-monitor@lists.podman.io"
+          reply_to: "podman-monitor@lists.podman.io"
+          from: ${{secrets.ACTION_MAIL_SENDER}}
+          body: "podman-machine-os build failed for ${{github.ref_name}}: ${{github.server_url}}/${{github.repository}}/actions/runs/${{github.run_id}}"
